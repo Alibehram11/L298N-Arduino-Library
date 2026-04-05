@@ -26,6 +26,23 @@ void Motor::backward(int speed) {
     analogWrite(_enb, speed);
     analogWrite(_ena, speed);
 }
+void Motor::left(int speed) {
+    digitalWrite(_in1, LOW);
+    digitalWrite(_in2, HIGH);
+    digitalWrite(_in3, HIGH);
+    digitalWrite(_in4, LOW);
+    analogWrite(_enb, speed);
+    analogWrite(_ena, speed);
+}
+
+void Motor::right(int speed) {
+    digitalWrite(_in1, HIGH);
+    digitalWrite(_in2, LOW);
+    digitalWrite(_in3, LOW);
+    digitalWrite(_in4, HIGH);
+    analogWrite(_enb, speed);
+    analogWrite(_ena, speed);
+}
 
 void Motor::stop() {
     digitalWrite(_in1, LOW);
