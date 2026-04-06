@@ -5,19 +5,13 @@
 
 class Motor {
 public:
-    Motor(int in1, int in2, int in3, int in4, int enb, int ena) : _in1(in1), _in2(in2), _enb(enb), _in3(in3), _in4(in4), _ena(ena) {
-        pinMode(_in1, OUTPUT);
-        pinMode(_in2, OUTPUT);
-        pinMode(_enb, OUTPUT);
-        pinMode(_in3, OUTPUT);
-        pinMode(_in4, OUTPUT); 
-        pinMode(_ena, OUTPUT);
-   
-    }
+    Motor(int in1, int in2, int in3, int in4, int enb, int ena);
     void forward(int speed);
     void backward(int speed);
-    void left(int speed);
-    void right(int speed);
+    void left(int speedena, int speedenb);
+    void right(int speedena, int speedenb);
+    void WideTurnLeft(int speedena, int speedenb);
+    void WideTurnRight(int speedena, int speedenb);
     void stop();
     void brake();
 
