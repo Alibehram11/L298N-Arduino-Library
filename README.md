@@ -1,16 +1,16 @@
-# L298N-Arduino-Library
+# Arduino Car Library
 <div align="center">
 
-# ⚙️ L298N Arduino Motor Library
+# 🚗 Arduino Car Motor Control Library
 
 ### Türkçe | [English](#-english-documentation)
 
 [![Arduino](https://img.shields.io/badge/Arduino-Compatible-00979D?style=for-the-badge&logo=arduino&logoColor=white)](https://www.arduino.cc/)
 [![Language](https://img.shields.io/badge/Language-C%2B%2B-blue?style=for-the-badge&logo=cplusplus)](https://isocpp.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange?style=for-the-badge)](https://github.com/Alibehram11/L298N-Arduino-Library/releases)
+[![Version](https://img.shields.io/badge/Version-2.0.0-orange?style=for-the-badge)](https://github.com/Alibehram11/Arduino-Car-Library/releases)
 
-> **L298N motor sürücü modülünü Arduino ile kolayca kullanmak için tasarlanmış, sade ve güçlü bir C++ kütüphanesi.**
+> **Arduino Arabalı Robotlar için L298N motor sürücü modülünü kolayca kontrol etmek için tasarlanmış, güçlü bir C++ kütüphanesi. İleri, geri, dön ve fren gibi araç hareketlerini tek bir komutla gerçekleştirin.**
 
 </div>
 
@@ -32,7 +32,15 @@
 
 ### 🌟 Genel Bakış
 
-Bu kütüphane, Arduino projelerinizde L298N çift H-köprü motor sürücü modülünü kullanmayı son derece basitleştirir. Karmaşık dijital sinyal yönetimini sizin adınıza halleder; siz sadece `forward()`, `backward()`, `stop()` ve `brake()` gibi anlaşılır komutlarla motorunuzu kontrol edersiniz.
+Bu kütüphane, Arduino tabanlı arabalı robotlar (robot arabalar) inşa ederken L298N çift H-köprü motor sürücü modülünü kullanmayı kolaylaştırır. Karmaşık dijital sinyal yönetimini sizin adınıza halleder; siz sadece `forward()`, `backward()`, `left()`, `right()`, `stop()` ve `brake()` gibi anlaşılır komutlarla aracınızı kontrol edersiniz.
+
+**Temel Kullanım:**
+- 🚗 **forward(speed)** — Araç ileriye git
+- 🚗 **backward(speed)** — Araç geriye git  
+- ⬅️ **left(speedLeft, speedRight)** — Sola dön
+- ➡️ **right(speedLeft, speedRight)** — Sağa dön
+- ⛔ **stop()** — Araç dursun (serbest)
+- 🛑 **brake()** — Araç acil fren
 
 ---
 
@@ -52,11 +60,12 @@ L298N, DC motorları ve step motorları kontrol etmek için kullanılan çift H-
 
 ### ✨ Özellikler
 
-- 🚀 **Basit API** — 4 temel fonksiyon ile tam motor kontrolü
+- � **Araç Kontrol Fonksiyonları** — İleri, geri, sol döş, sağ dön, duro commands
+- 🎯 **Bağımsız Motor Kontrolü** — Her motorun hızını ayrı ayarlayın (sol/sağ)
 - 🎛️ **PWM Hız Kontrolü** — `analogWrite` ile 0–255 arası hassas hız ayarı
-- ⛔ **İki Farklı Durdurma Modu** — Serbest duruş (`stop`) ve aktif fren (`brake`)
-- 🔌 **Çoklu Motor Desteği** — Her motor için ayrı nesne oluşturarak birden fazla motoru bağımsız yönetin
-- 📦 **Hafif ve Sade** — Gereksiz bağımlılık yok, sadece `<Arduino.h>`
+- ⛔ **İki Farklı Durdurma Modu** — Serbest duruş (`stop`) ve aktif fren/ani durdurma (`brake`)
+- 🔌 **Hafif ve Verimli** — Sadece `<Arduino.h>` bağımlılığı
+- 📦 **Kolay Entegreasyon** — Plug & play, minimum setup gerekli
 
 ---
 
@@ -105,30 +114,46 @@ Arduino IDE → Sketch → Include Library → Add .ZIP Library... yolunu izleyi
 
 ### 🚀 Kullanım
 
-#### Temel Kullanım
+#### Temel Kullanım (Araç Kontrolü)
 
 ```cpp
 #include "motor.h"
 
-// Motor(IN1 pini, IN2 pini, EN pini)
-Motor motor(9, 8, 10);
+// Motor(IN1, IN2, IN3, IN4, ENB, ENA)
+// IN1, IN2 = Sol Motor kontrol pinleri
+// IN3, IN4 = Sağ Motor kontrol pinleri
+// ENA = Sol motor PWM (hız) pini
+// ENB = Sağ motor PWM (hız) pini
+Motor car(9, 8, 7, 6, 5, 10);
 
 void setup() {
   // Kurulum gerekmez, constructor pinleri ayarlar
 }
 
 void loop() {
-  motor.forward(200);   // İleri git, hız: 200/255
+  // Araç ileriye git
+  car.forward(200);
   delay(2000);
 
-  motor.backward(150);  // Geri git, hız: 150/255
+  // Araç geriye git
+  car.backward(150);
   delay(2000);
 
-  motor.stop();         // Serbest dur (kılavuz bırak)
+  // Araç sola dön (bağımsız hızlar)
+  car.left(100, 200);  // Sol motor yavaş, sağ motor hızlı
   delay(1000);
 
-  motor.brake();        // Aktif fren (ani dur)
-  delay(500);
+  // Araç sağa dön
+  car.right(200, 100); // Sağ motor yavaş, sol motor hızlı
+  delay(1000);
+
+  // Araç dur (serbest)
+  car.stop();
+  delay(1000);
+
+  // Acil durdurma
+  car.brake();
+  delay(1000);
 }
 ```
 
@@ -136,63 +161,90 @@ void loop() {
 
 ### 📖 API Referansı
 
-#### `Motor(int in1, int in2, int en)`
-Kurucu fonksiyon. Motor nesnesini oluşturur ve pinleri `OUTPUT` olarak ayarlar.
+#### `Motor(int in1, int in2, int in3, int in4, int enb, int ena)`
+Kurucu fonksiyon. Motor (araç) nesnesini oluşturur ve tüm pinleri `OUTPUT` olarak ayarlar.
 
 | Parametre | Açıklama |
 |---|---|
-| `in1` | L298N IN1 pinine bağlanan Arduino pini |
-| `in2` | L298N IN2 pinine bağlanan Arduino pini |
-| `en` | L298N Enable pinine bağlanan PWM pini |
+| `in1` | L298N IN1 - Sol Motor ileri pini |
+| `in2` | L298N IN2 - Sol Motor geri pini |
+| `in3` | L298N IN3 - Sağ Motor ileri pini |
+| `in4` | L298N IN4 - Sağ Motor geri pini |
+| `ena` | L298N ENA - Sol Motor PWM (hız) pini |
+| `enb` | L298N ENB - Sağ Motor PWM (hız) pini |
 
 ---
 
 #### `void forward(int speed)`
-Motoru **ileri** yönde döndürür.
+Araç **ileriye** hareket eder.
 
 | Parametre | Açıklama |
 |---|---|
 | `speed` | Hız değeri (0 = dur, 255 = tam hız) |
 
 ```cpp
-motor.forward(255);  // Tam hızda ileri
-motor.forward(128);  // Yarım hızda ileri (~%50)
+car.forward(255);  // Tam hızda ileri
+car.forward(128);  // Yarım hızda ileri (~%50)
 ```
 
 ---
 
 #### `void backward(int speed)`
-Motoru **geri** yönde döndürür.
+Araç **geriye** hareket eder.
 
 | Parametre | Açıklama |
 |---|---|
 | `speed` | Hız değeri (0 = dur, 255 = tam hız) |
 
 ```cpp
-motor.backward(200);  // Geri git
+car.backward(200);  // Geri git
+```
+
+---
+
+#### `void left(int speedena, int speedenb)`
+Araç **sola** döner. Motor hızlarını bağımsız olarak kontrol edebilirsiniz.
+
+| Parametre | Açıklama |
+|---|---|
+| `speedena` | Sol motor hızı (0-255) |
+| `speedenb` | Sağ motor hızı (0-255) |
+
+```cpp
+car.left(100, 200);  // Sola dön - sağ motor daha hızlı
+```
+
+---
+
+#### `void right(int speedena, int speedenb)`
+Araç **sağa** döner. Motor hızlarını bağımsız olarak kontrol edebilirsiniz.
+
+| Parametre | Açıklama |
+|---|---|
+| `speedena` | Sol motor hızı (0-255) |
+| `speedenb` | Sağ motor hızı (0-255) |
+
+```cpp
+car.right(200, 100);  // Sağa dön - sol motor daha hızlı
 ```
 
 ---
 
 #### `void stop()`
-Motoru **serbest bırakarak** durdurur. Motor kendi ataletinden dolayı yavaşça durur.
+Araç **serbest durur**. Motor kendi ataletinden dolayı yavaşça durur.
 
 ```cpp
-motor.stop();  // Yumuşak duruş
+car.stop();  // Yumuşak duruş
 ```
-
-> IN1=LOW, IN2=LOW, EN=0
 
 ---
 
 #### `void brake()`
-Motoru **aktif olarak frenleyerek** anında durdurur. Her iki giriş HIGH yapılır ve motor kilitlenir.
+Araç **acilen durdurulur**. Motor kilitlenir ve ani durur.
 
 ```cpp
-motor.brake();  // Ani ve sert duruş
+car.brake();  // Ani ve sert duruş
 ```
-
-> IN1=HIGH, IN2=HIGH, EN=255
 
 ---
 
