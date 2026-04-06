@@ -16,6 +16,12 @@ Temel araç hareketi komutlarını öğrenmek için ideal.
 - ✅ Serbest durdurma (`stop`)
 - ✅ Acil durdurma (`brake`)
 
+**Donanım Şeması:**
+
+![Single Motor Setup](../images/single-motor-wiring.png)
+
+>Detaylı donanım rehberi için: [HARDWARE_SETUP.md](../docs/HARDWARE_SETUP.md)
+
 **Donanım:**
 ```
 Arduino Pin 9  --> L298N IN1 (Sol Motor İleri)
@@ -43,6 +49,12 @@ Kompleks hareket desenlerini demonstre eder.
 - ✅ Spiral hareketi
 - ✅ Hız ramplama (ivme testi)
 - ✅ Pürüzsüz viraj testleri
+
+**Donanım Şeması (Çift Motor):**
+
+![Dual Motor Setup](../images/dual-motor-wiring.png)
+
+>Detaylı donanım rehberi: [HARDWARE_SETUP.md](../docs/HARDWARE_SETUP.md)
 
 **Tipler:**
 

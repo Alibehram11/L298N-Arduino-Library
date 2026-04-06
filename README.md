@@ -27,6 +27,7 @@
 - [Kullanım](#-kullanım)
 - [API Referansı](#-api-referansı)
 - [Örnek Kodlar](#-örnek-kodlar)
+- [Donanım Rehberi](docs/HARDWARE_SETUP.md)
 
 ---
 
@@ -71,24 +72,30 @@ L298N, DC motorları ve step motorları kontrol etmek için kullanılan çift H-
 
 ### 🔌 Donanım Bağlantısı
 
+#### Çift Motor Kurulumu (Araç Kontrolü)
+
+![Arduino Car Wiring - Dual Motor L298N](images/dual-motor-wiring.png)
+
 ```
 Arduino          L298N Modülü
 -------          ------------
-Pin 9    ──────► IN1
-Pin 8    ──────► IN2
-Pin 10   ──────► EN (Enable / PWM)
+Pin 9    ──────► IN1 (Sol Motor İleri)
+Pin 8    ──────► IN2 (Sol Motor Geri)
+Pin 7    ──────► IN3 (Sağ Motor İleri)
+Pin 6    ──────► IN4 (Sağ Motor Geri)
+Pin 5    ──────► ENA (Sol Motor PWM)
+Pin 10   ──────► ENB (Sağ Motor PWM)
+5V       ──────► +5V (Logic Power)
 GND      ──────► GND
 ```
 
-> **⚠️ Dikkat:** Enable (EN) pini mutlaka PWM destekleyen bir pine bağlanmalıdır (Arduino Uno'da: 3, 5, 6, 9, 10, 11).
+**Motor Bağlantıları:**
+- Sol Motor → L298N OUT1, OUT2
+- Sağ Motor → L298N OUT3, OUT4
 
-**Tipik L298N Modül Pinleri:**
+> **⚠️ Dikkat:** The EN ports must connect to PWM-capable pins (Arduino Uno: 3, 5, 6, 9, 10, 11).
 
-```
-[ Motor A ]──► OUT1, OUT2  ──► IN1, IN2, ENA  ◄── Arduino
-[ Motor B ]──► OUT3, OUT4  ──► IN3, IN4, ENB  ◄── Arduino
-               GND, 5V, VCC (güç kaynağı)
-```
+**Detaylı Donanım Rehberi:** [docs/HARDWARE_SETUP.md](docs/HARDWARE_SETUP.md)
 
 ---
 
@@ -249,6 +256,15 @@ car.brake();  // Ani ve sert duruş
 ---
 
 ### 💡 Örnek Kodlar
+
+Tam çalışan örnekler `examples/` klasöründe bulunmaktadır:
+
+- **[BasicCarControl.ino](examples/BasicCarControl.ino)** — Başlangıçlar için temel hareket komutları
+- **[AdvancedNavigation.ino](examples/AdvancedNavigation.ino)** — İleri seviye hareket desenleri ve navigasyon
+
+Tüm örnekler hakkında: [examples/README.md](examples/README.md)
+
+---
 
 #### İki Motor ile Robot Araba
 
