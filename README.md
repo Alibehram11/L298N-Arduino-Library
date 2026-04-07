@@ -21,6 +21,7 @@
 ### 📋 İçindekiler
 - [Genel Bakış](#-genel-bakış)
 - [L298N Nedir?](#-l298n-nedir)
+- [HC-06 Bluetooth Modülü](#-hc-06-bluetooth-modülü)
 - [Özellikler](#-özellikler)
 - [Donanım Bağlantısı](#-donanım-bağlantısı)
 - [Kurulum](#-kurulum)
@@ -59,7 +60,45 @@ L298N, DC motorları ve step motorları kontrol etmek için kullanılan çift H-
 
 ---
 
-### ✨ Özellikler
+### 📱 HC-06 Bluetooth Modülü
+
+HC-06, Arduino aracınızı kablosuz olarak kontrol etmek için kullanılan bir Bluetooth modülüdür. Bu kütüphane HC-06 modülüyle haberleşmeyi kolaylaştırır.
+
+| Özellik | Değer |
+|---|---|
+| İletişim Protokolü | UART (Serial) |
+| Baud Hızı | 9600 bps (varsayılan) |
+| Voltaj | 3.3V - 5V (5V tolerant) |
+| Bluetooth Versiyonu | Bluetooth 2.1 + EDR |
+| Mesafe | ~10 - 100 metre (ortama göre değişir) |
+| Maksimum Akım | ~40 mA |
+
+**HC-06 Kullanım Örneği:**
+```cpp
+#include "hc-06.h"
+
+// HC06(RxPin, TxPin, hc06_pin)
+HC06 bluetooth(0, 1, 2);  // RX=0, TX=1, Control=2
+
+void setup() {
+    Serial.begin(9600);
+    bluetooth.begin(9600);  // HC-06 başlat
+}
+
+void loop() {
+    // HC-06'dan veri oku
+    String data = bluetooth.readData();
+    if (data.length() > 0) {
+        Serial.println("Alınan veri: " + data);
+    }
+    
+    // HC-06'ya veri gönder
+    bluetooth.sendData("Merhaba!");
+    delay(1000);
+}
+```
+
+---
 
 - � **Araç Kontrol Fonksiyonları** — İleri, geri, sol döş, sağ dön, duro commands
 - 🎯 **Bağımsız Motor Kontrolü** — Her motorun hızını ayrı ayarlayın (sol/sağ)
