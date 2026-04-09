@@ -46,6 +46,8 @@ public:
      *                           -> 2KΩ -> GND
      */
     HC06(int rxPin, int txPin, int hc06);
+    HC06(const HC06&) = delete;
+    HC06& operator=(const HC06&) = delete;
     
     /**
      * Destructor - Clean up SoftwareSerial resources
@@ -135,6 +137,7 @@ private:
     int _rxPin;                    // Receive pin number
     int _txPin;                    // Transmit pin number
     int _hc06;                     // HC-06 control/enable pin (optional)
+    long _baudRate;                // Last configured baud rate
     SoftwareSerial* _btSerial;     // Dynamic pointer to SoftwareSerial for Bluetooth communication
 };
 

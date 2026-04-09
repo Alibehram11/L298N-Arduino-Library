@@ -16,11 +16,11 @@
  *   #include <arduino/hc-06.h>
  */
 
-#ifndef ARDUINO_H
-#define ARDUINO_H
+#ifndef ARDUINO_CAR_LIBRARY_H
+#define ARDUINO_CAR_LIBRARY_H
 
 // Include all library components
 #include "motor.h"
 #include "hc-06.h"
 
-#endif // ARDUINO_H
+#endif // ARDUINO_CAR_LIBRARY_H

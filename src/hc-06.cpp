@@ -29,7 +29,8 @@
 HC06::HC06(int rxPin, int txPin, int hc06) 
     : _rxPin(rxPin),           // Member initialization: store RX pin
       _txPin(txPin),           // Member initialization: store TX pin
-      _hc06(hc06)              // Member initialization: store HC-06 control pin
+      _hc06(hc06),             // Member initialization: store HC-06 control pin
+      _baudRate(9600)
 {
     // Create a new SoftwareSerial instance on the heap (dynamic memory)
     // SoftwareSerial is a library class that emulates serial communication
@@ -39,7 +40,13 @@ HC06::HC06(int rxPin, int txPin, int hc06)
     // Start the serial communication at 9600 baud
     // 9600 baud is the default communication speed for HC-06 modules
     // Baud = bits per second (9600 bps = 9600 data bits/second)
-    _btSerial->begin(9600);
+    _btSerial->begin(_baudRate);
+
+    if (_hc06 >= 0)
+    {
+        pinMode(_hc06, OUTPUT);
+        digitalWrite(_hc06, HIGH);
+    }
 }
 
 /**
@@ -110,6 +117,7 @@ void HC06::begin(long baudRate)
     // Without this check, calling methods on a null pointer causes a crash
     if (_btSerial != nullptr)
     {
+        _baudRate = baudRate;
         // Initialize the SoftwareSerial at the specified baud rate
         // This reconfigures the UART parameters for communication
         _btSerial->begin(baudRate);
@@ -139,10 +147,13 @@ void HC06::begin(long baudRate)
  */
 void HC06::sendData(const String& data)
 {
-    // println() sends the string plus a newline character ('\n')
-    // This helps the receiving device/app identify message boundaries
-    // Alternative: use print() to send without newline
-    _btSerial->println(data);
+    if (_btSerial != nullptr)
+    {
+        // println() sends the string plus a newline character ('\n')
+        // This helps the receiving device/app identify message boundaries
+        // Alternative: use print() to send without newline
+        _btSerial->println(data);
+    }
 }
 
 /**
@@ -173,12 +184,14 @@ String HC06::readData()
 {
     // Check if there's data waiting in the serial input buffer
     // available() returns the number of bytes ready to read (0 if none)
-    if (_btSerial->available())
+    if (_btSerial != nullptr && _btSerial->available())
     {
         // readStringUntil('\n') reads all characters up to the newline
         // The '\n' character marks the end of a message
         // Example: "STOP\n" -> returns "STOP" (without the newline)
-        return _btSerial->readStringUntil('\n');
+        String data = _btSerial->readStringUntil('\n');
+        data.trim();
+        return data;
     }
     
     // Return empty string if no data is available
@@ -249,30 +262,23 @@ void HC06::end()
  */
 void HC06::reset()
 {
-    // Set the RX pin as an output
-    // By default, SoftwareSerial uses pins as inputs from the HC-06
-    // We need to control them for the reset pulse
-    pinMode(_rxPin, OUTPUT);
-    
-    // Set the TX pin as an output
-    // Both RX and TX lines are driven to create the reset pulse
-    pinMode(_txPin, OUTPUT);
-    
-    // Drive both pins LOW (0 volts)
-    // This simulates power-off to the HC-06 module
-    digitalWrite(_rxPin, LOW);
-    digitalWrite(_txPin, LOW);
-    
-    // Wait 100 milliseconds
-    // This gives the HC-06 module time to detect the power loss
-    // and discharge its capacitors
+    if (_btSerial == nullptr)
+    {
+        return;
+    }
+
+    _btSerial->end();
+
+    if (_hc06 >= 0)
+    {
+        pinMode(_hc06, OUTPUT);
+        digitalWrite(_hc06, LOW);
+        delay(100);
+        digitalWrite(_hc06, HIGH);
+    }
+
     delay(100);
-    
-    // Drive both pins HIGH (5 volts)
-    // This restarts the HC-06 module
-    // The module will re-initialize and be ready for communication
-    digitalWrite(_rxPin, HIGH);
-    digitalWrite(_txPin, HIGH);
+    _btSerial->begin(_baudRate);
 }
 
 /**
