@@ -24,6 +24,25 @@ add_library(arduino-car
     
     # I2C radio link receiver
     src/radio-link-i2c.cpp
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # NEW ADVANCED FEATURES
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # PID motor speed controller
+    src/pid-controller.cpp
+    
+    # QTR line following sensor support
+    src/qtr-sensor.cpp
+    
+    # Motor encoder feedback system
+    src/motor-encoder.cpp
+    
+    # Configuration manager (EEPROM)
+    src/config-manager.cpp
+    
+    # Speed ramping (smooth acceleration/deceleration)
+    src/speed-ramper.cpp
 )
 
 # Public header files (visible to users of the library)
@@ -42,7 +61,7 @@ set_target_properties(arduino-car PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION 2
     PUBLIC_HEADER 
-        "include/arduino/motor.h;include/arduino/hc-06.h;include/arduino/hcsr-04.h;include/arduino/radio-link-i2c.h;include/arduino/arduino.h"
+        "include/arduino/motor.h;include/arduino/hc-06.h;include/arduino/hcsr-04.h;include/arduino/radio-link-i2c.h;include/arduino/pid-controller.h;include/arduino/qtr-sensor.h;include/arduino/motor-encoder.h;include/arduino/config-manager.h;include/arduino/speed-ramper.h;include/arduino/arduino.h"
 )
 
 # Installation configuration
@@ -72,7 +91,12 @@ message(STATUS "║  Modules Included:")
 message(STATUS "║  ├─ Motor Control (L298N)")
 message(STATUS "║  ├─ Bluetooth Module (HC-06)")
 message(STATUS "║  ├─ Ultrasonic Sensor (HC-SR04) *Enhanced")
-message(STATUS "║  └─ I2C Radio Link *New")
+message(STATUS "║  ├─ I2C Radio Link *New")
+message(STATUS "║  ├─ PID Motor Speed Controller *New")
+message(STATUS "║  ├─ QTR Line Following Sensors *New")
+message(STATUS "║  ├─ Motor Encoder Feedback *New")
+message(STATUS "║  ├─ Configuration Manager *New")
+message(STATUS "║  └─ Speed Ramping *New")
 message(STATUS "│")
 message(STATUS "║  Examples: " )
 message(STATUS "║  ├─ BasicCarControl.ino")

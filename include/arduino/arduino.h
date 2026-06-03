@@ -47,5 +47,24 @@
 // I2C-based radio link receiver
 #include "radio-link-i2c.h"
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ADVANCED FEATURES (NEW)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// PID Motor Speed Controller - Smooth speed regulation with feedback
+#include "pid-controller.h"
+
+// QTR Line Following Sensors - Reflectance sensor arrays for line tracking
+#include "qtr-sensor.h"
+
+// Motor Encoder Feedback - Quadrature encoders for speed/position tracking
+#include "motor-encoder.h"
+
+// Configuration Manager - Persistent storage of robot parameters
+#include "config-manager.h"
+
+// Speed Ramper - Smooth acceleration/deceleration profiles
+#include "speed-ramper.h"
+
 #endif // ARDUINO_CAR_LIBRARY_H
 
