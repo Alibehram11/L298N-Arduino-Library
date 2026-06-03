@@ -1,17 +1,27 @@
 # Arduino Car Motor Control Library
 
-A small Arduino C++ library for controlling two DC motors through an L298N motor driver, with optional HC-06 Bluetooth command input.
+Arduino C++ motor-control library for L298N robot cars with Bluetooth examples.
 
-The goal is to make beginner robot-car projects easier to wire, test, and extend without repeating the same motor-control code in every sketch.
+## Problem
 
-## What It Provides
+Small robot-car projects often repeat the same L298N wiring, PWM speed, and movement logic in every sketch. That makes the first build slower and makes later changes harder to test.
 
-- `Motor` class for forward, backward, left, right, stop, and brake actions.
-- Independent PWM speed control for two motors.
-- L298N dual-motor driver support.
+## Solution
+
+This library groups common robot-car movement commands into reusable Arduino classes:
+
+- `Motor` for forward, backward, left, right, stop, brake, and wide turns.
+- Independent PWM speed control for two DC motors.
 - Optional `HC06` helper for Bluetooth serial input.
-- Example sketches for basic movement and navigation patterns.
-- Hardware notes for Arduino, L298N, and HC-06 wiring.
+- Example sketches that can be adapted to a real robot-car build.
+
+## Tech Stack
+
+- Arduino
+- C++
+- L298N dual H-bridge motor driver
+- HC-06 Bluetooth module
+- DC motors and PWM speed control
 
 ## Hardware
 
@@ -137,20 +147,28 @@ cd ~/Arduino/libraries
 git clone https://github.com/Alibehram11/Arduino-Car-Library.git ArduinoCar
 ```
 
-## Examples
+## Verification
 
-Check the `examples/` folder for Arduino sketches. Update pin numbers before uploading so they match your wiring.
-
-## Notes
-
+- Open the example sketches in Arduino IDE.
+- Update pin numbers to match your wiring.
+- Compile the sketch before uploading.
 - Test motor direction with the wheels lifted before running the robot on the ground.
-- Use a separate motor power supply when possible.
-- Share ground between Arduino and L298N.
-- Add a voltage divider if your Bluetooth module RX pin is not 5V tolerant.
+
+## Demo / Evidence
+
+- Example sketches are available in `examples/`.
+- Hardware and wiring notes are documented in this README.
+- The public roadmap is tracked in GitHub Issues.
+
+## Roadmap
+
+- Add one short wiring photo or GIF.
+- Add a verified compile note for Arduino Uno.
+- Add a small troubleshooting table for motor direction, power, and Bluetooth pairing.
 
 ## Status
 
-This is a learning-friendly Arduino library with examples and hardware notes. Claims about production readiness, memory safety, and hardware compatibility should be validated with real hardware tests before using it in a competition or long-running robot.
+Portfolio-ready learning library. It is suitable for explaining Arduino robot-car motor control, but real hardware compatibility should be verified per build before competition or long-running use.
 
 ## License
 
