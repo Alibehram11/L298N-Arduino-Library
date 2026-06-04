@@ -418,20 +418,28 @@ cd ~/Arduino/libraries
 git clone https://github.com/Alibehram11/Arduino-Car-Library.git ArduinoCar
 ```
 
-## Examples
+## Verification
 
-Check the `examples/` folder for Arduino sketches. Update pin numbers before uploading so they match your wiring.
-
-## Notes
-
+- Open the example sketches in Arduino IDE.
+- Update pin numbers to match your wiring.
+- Compile the sketch before uploading.
 - Test motor direction with the wheels lifted before running the robot on the ground.
-- Use a separate motor power supply when possible.
-- Share ground between Arduino and L298N.
-- Add a voltage divider if your Bluetooth module RX pin is not 5V tolerant.
+
+## Demo / Evidence
+
+- Example sketches are available in `examples/`.
+- Hardware and wiring notes are documented in this README.
+- The public roadmap is tracked in GitHub Issues.
+
+## Roadmap
+
+- Add one short wiring photo or GIF.
+- Add a verified compile note for Arduino Uno.
+- Add a small troubleshooting table for motor direction, power, and Bluetooth pairing.
 
 ## Status
 
-This is a learning-friendly Arduino library with examples and hardware notes. Claims about production readiness, memory safety, and hardware compatibility should be validated with real hardware tests before using it in a competition or long-running robot.
+Portfolio-ready learning library. It is suitable for explaining Arduino robot-car motor control, but real hardware compatibility should be verified per build before competition or long-running use.
 
 ## License
 
