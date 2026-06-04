@@ -1,183 +1,95 @@
 /*
  * EXAMPLE 3: BluetoothControl.ino
- * 
+ *
  * Arduino Car Library - Wireless Bluetooth Control
- * 
- * This example demonstrates wireless control of the Arduino car using
- * an HC-06 Bluetooth module connected to a smartphone or PC.
- * 
- * Send commands from your mobile device to control motors in real-time.
- * Perfect for smartphone-controlled robot cars!
+ *
+ * Send single-character commands over an HC-06 Bluetooth module:
+ *   F = forward
+ *   B = backward
+ *   L = left pivot
+ *   R = right pivot
+ *   S = stop
+ *   X = brake
+ *   0..9 = set speed preset
  */
 
-#include "motor.h"
+#include <arduino/arduino.h>
+#include <ctype.h>
 
-// Create car object: Motor(IN1, IN2, IN3, IN4, ENB, ENA)
-Motor car(9, 8, 7, 6, 10, 5);
+Motor car(9, 8, 7, 6, 5, 10);
+HC06 bluetooth(2, 3, -1);
 
-void setup() {
-  Serial.begin(9600);
-  Serial.println("=== Arduino Car - Advanced Navigation Demo ===");
-  delay(1000);
+uint8_t driveSpeed = 180;
+
+void setup()
+{
+    Serial.begin(9600);
+    bluetooth.begin(9600);
+
+    Serial.println("=== Arduino Car - Bluetooth Control ===");
+    Serial.println("Commands: F B L R S X, speed 0..9");
 }
 
-void loop() {
-  // Pattern 1: Drive a square
-  Serial.println("\n>> PATTERN 1: Driving a SQUARE");
-  driveSquare();
-  delay(3000);
+void loop()
+{
+    String command = bluetooth.readData();
 
-  // Pattern 2: Zigzag maneuver
-  Serial.println("\n>> PATTERN 2: ZIGZAG maneuver");
-  zigzagManeuver();
-  delay(3000);
+    if (command.length() == 0 && Serial.available()) {
+        command = Serial.readStringUntil('\n');
+        command.trim();
+    }
 
-  // Pattern 3: Spiral movement
-  Serial.println("\n>> PATTERN 3: SPIRAL movement");
-  spiralMovement();
-  delay(3000);
+    if (command.length() == 0) {
+        return;
+    }
 
-  // Pattern 4: Speed test (acceleration ramp)
-  Serial.println("\n>> PATTERN 4: ACCELERATION TEST");
-  accelerationTest();
-  delay(2000);
-
-  // Pattern 5: Smooth cornering
-  Serial.println("\n>> PATTERN 5: SMOOTH CORNER TEST");
-  smoothCornerTest();
-  delay(2000);
-
-  Serial.println("\n=== End of Advanced Demo - Restarting... ===\n");
+    char c = toupper(command.charAt(0));
+    handleCommand(c);
 }
 
-// ============== MOVEMENT FUNCTIONS ==============
+void handleCommand(char command)
+{
+    if (command >= '0' && command <= '9') {
+        driveSpeed = map(command - '0', 0, 9, 0, 255);
+        Serial.print("Speed set to ");
+        Serial.println(driveSpeed);
+        bluetooth.sendData(String("Speed=") + String(driveSpeed));
+        return;
+    }
 
-void driveSquare() {
-  /*
-   * Drive in a perfect square pattern
-   * Each side: 2 seconds forward + 1 second 90-degree turn
-   */
-  for (int i = 0; i < 4; i++) {
-    Serial.print("  Side ");
-    Serial.print(i + 1);
-    Serial.println(" - Moving forward");
-    car.forward(200);
-    delay(2000);
-
-    Serial.println("  Turning 90 degrees");
-    car.left(50, 150);  // Sharp left turn
-    delay(1000);
-
-    car.stop();
-    delay(300);
-  }
-  car.brake();
+    switch (command) {
+    case 'F':
+        car.forward(driveSpeed);
+        report("Forward");
+        break;
+    case 'B':
+        car.backward(driveSpeed);
+        report("Backward");
+        break;
+    case 'L':
+        car.drive(-driveSpeed, driveSpeed);
+        report("Left");
+        break;
+    case 'R':
+        car.drive(driveSpeed, -driveSpeed);
+        report("Right");
+        break;
+    case 'S':
+        car.stop();
+        report("Stop");
+        break;
+    case 'X':
+        car.brake();
+        report("Brake");
+        break;
+    default:
+        report("Unknown command");
+        break;
+    }
 }
 
-void zigzagManeuver() {
-  /*
-   * Zigzag left and right while moving forward
-   * Useful for obstacle avoidance patterns
-   */
-  for (int i = 0; i < 3; i++) {
-    // Go forward-right
-    Serial.println("  Zigzag: Forward-Right");
-    car.right(150, 120);  // Slight right turn while moving
-    delay(1500);
-
-    // Go forward-left
-    Serial.println("  Zigzag: Forward-Left");
-    car.left(120, 150);   // Slight left turn while moving
-    delay(1500);
-  }
-  car.stop();
+void report(const String& message)
+{
+    Serial.println(message);
+    bluetooth.sendData(message);
 }
-
-void spiralMovement() {
-  /*
-   * Create a spiral pattern by gradually increasing turn intensity
-   */
-  for (int speed = 50; speed < 200; speed += 30) {
-    Serial.print("  Spiral speed: ");
-    Serial.println(speed);
-    
-    car.left(speed / 2, speed);  // Gradually sharper left turn
-    delay(800);
-  }
-  car.stop();
-}
-
-void accelerationTest() {
-  /*
-   * Test smooth acceleration from 0 to 255
-   * Good for tuning motor behavior
-   */
-  Serial.println("  Accelerating forward...");
-  for (int speed = 0; speed <= 255; speed += 20) {
-    car.forward(speed);
-    Serial.print("  Speed: ");
-    Serial.println(speed);
-    delay(400);
-  }
-
-  Serial.println("  Decelerating...");
-  for (int speed = 255; speed >= 0; speed -= 20) {
-    car.forward(speed);
-    Serial.print("  Speed: ");
-    Serial.println(speed);
-    delay(400);
-  }
-
-  car.stop();
-}
-
-void smoothCornerTest() {
-  /*
-   * Test different turn speeds for smooth navigation
-   * Helps find optimal turning speeds for your car
-   */
-  // Gentle left turn (high-speed corner)
-  Serial.println("  Gentle LEFT turn (high-speed)");
-  car.left(180, 200);   // Minimal speed difference
-  delay(2000);
-  car.stop();
-  delay(500);
-
-  // Sharp left turn (low-speed corner)
-  Serial.println("  Sharp LEFT turn (low-speed)");
-  car.left(50, 150);    // Large speed difference
-  delay(2000);
-  car.stop();
-  delay(500);
-
-  // Gentle right turn (high-speed corner)
-  Serial.println("  Gentle RIGHT turn (high-speed)");
-  car.right(200, 180);  // Minimal speed difference
-  delay(2000);
-  car.stop();
-  delay(500);
-
-  // Sharp right turn (low-speed corner)
-  Serial.println("  Sharp RIGHT turn (low-speed)");
-  car.right(150, 50);   // Large speed difference
-  delay(2000);
-  car.stop();
-}
-
-/*
- * USEFUL TIPS:
- * 
- * 1. Motor Speed Reference:
- *    - 0-50:     Very slow (calibration, precise movement)
- *    - 50-150:   Medium speed (turning, controlled movement)
- *    - 150-255:  High speed (fast movement, racing)
- * 
- * 2. Turning Tips:
- *    - Gentle turn: Speeds differ by ~20-30
- *    - Sharp turn:  Speeds differ by ~100+
- *    - Spin in place: 0 and 255 (one motor stops)
- * 
- * 3. Calibration:
- *    - If car drifts left/right, adjust motor speeds
- *    - Faster motor on the drift side to balance
- */

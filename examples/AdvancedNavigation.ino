@@ -12,7 +12,7 @@
  * Perfect for robot car competitions and autonomous navigation!
  */
 
-#include "motor.h"
+#include <arduino/arduino.h>
 
 // Create car object: Motor(IN1, IN2, IN3, IN4, ENB, ENA)
 Motor car(9, 8, 7, 6, 10, 5);

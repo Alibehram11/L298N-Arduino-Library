@@ -14,6 +14,12 @@ DiagnosticsEngine::DiagnosticsEngine(uint8_t maxLogSize)
     _log = new LogEntry[maxLogSize];
 }
 
+DiagnosticsEngine::~DiagnosticsEngine()
+{
+    delete[] _log;
+    _log = nullptr;
+}
+
 void DiagnosticsEngine::logError(ErrorLevel level, ErrorCode code, const String& message)
 {
     if (_logCount < _maxLogSize)

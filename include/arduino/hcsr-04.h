@@ -278,10 +278,3 @@ private:
 };
 
 #endif // HCSR04_H
- *   Serial.println("Distance: " + String(distance) + " cm");
- * 
- * License: MIT
- * ============================================================================
- */
-
- 

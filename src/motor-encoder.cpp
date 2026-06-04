@@ -11,7 +11,7 @@ MotorEncoder::MotorEncoder(uint8_t clkPin, uint8_t dtPin, uint16_t countsPerRevo
     : _clkPin(clkPin), _dtPin(dtPin), _cpr(countsPerRevolution),
       _wheelRadiusMM(wheelRadiusMM),
       _tickCount(0), _lastTickCount(0), _ticksLastCycle(0),
-      _rpmValue(0), _direction(0), _lastUpdateTime(millis()),
+      _rpmValue(0), _direction(0), _lastUpdateTime(0),
       _distanceAccumulator(0)
 {
     pinMode(_clkPin, INPUT);
@@ -29,6 +29,10 @@ long MotorEncoder::getTickCount() const
 
 long MotorEncoder::getRotationCount() const
 {
+    if (_cpr == 0) {
+        return 0;
+    }
+
     return _tickCount / _cpr;
 }
 
@@ -52,6 +56,10 @@ float MotorEncoder::getLinearSpeedMMS() const
 
 float MotorEncoder::getDistanceMM() const
 {
+    if (_cpr == 0) {
+        return 0;
+    }
+
     return _distanceAccumulator;
 }
 
@@ -72,6 +80,18 @@ void MotorEncoder::resetDistance()
 
 void MotorEncoder::update(unsigned long currentTimeMicros)
 {
+    if (_cpr == 0) {
+        _rpmValue = 0;
+        _direction = 0;
+        return;
+    }
+
+    if (_lastUpdateTime == 0) {
+        _lastUpdateTime = currentTimeMicros;
+        _lastTickCount = _tickCount;
+        return;
+    }
+
     unsigned long deltaTime = currentTimeMicros - _lastUpdateTime;
     _lastUpdateTime = currentTimeMicros;
 

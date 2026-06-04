@@ -203,6 +203,7 @@ Motor car(in1, in2, in3, in4, ena, enb);
 
 car.forward(speed);              // 0-255
 car.backward(speed);
+car.drive(leftSpeed, rightSpeed); // -255..255 per side
 car.left(ena_speed, enb_speed);  // Pivot
 car.right(ena_speed, enb_speed);
 car.WideTurnLeft(ena, enb);      // Smooth curve
@@ -250,6 +251,7 @@ SpeedRamper ramp(maxSpeed, accelRate, profile);
 ramp.setTargetSpeed(200);
 uint8_t pwm = ramp.update(millis());
 bool done = ramp.isRampingComplete();
+ramp.setProfile(SpeedRamper::PROFILE_SCURVE);
 ramp.stop();  // Decelerate to 0
 ```
 
@@ -261,6 +263,7 @@ config.load();
 float value = config.getFloat("key", defaultValue);
 config.setFloat("key", newValue);
 config.save();
+bool defaultsUsed = config.usedDefaults();
 config.printToSerial();
 ```
 

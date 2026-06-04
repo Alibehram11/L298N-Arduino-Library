@@ -7,6 +7,31 @@
 
 #include "motor.h"
 
+int Motor::clampSpeed(int speed)
+{
+    if (speed < 0) return 0;
+    if (speed > 255) return 255;
+    return speed;
+}
+
+void Motor::setMotor(int forwardPin, int backwardPin, int pwmPin, int speed)
+{
+    int pwm = clampSpeed(abs(speed));
+
+    if (speed > 0) {
+        digitalWrite(forwardPin, HIGH);
+        digitalWrite(backwardPin, LOW);
+    } else if (speed < 0) {
+        digitalWrite(forwardPin, LOW);
+        digitalWrite(backwardPin, HIGH);
+    } else {
+        digitalWrite(forwardPin, LOW);
+        digitalWrite(backwardPin, LOW);
+    }
+
+    analogWrite(pwmPin, pwm);
+}
+
 /**
  * CONSTRUCTOR: Motor::Motor(int in1, int in2, int in3, int in4, int ena, int enb)
  * ────────────────────────────────────────────────────────────────────────────────
@@ -104,10 +129,10 @@ void Motor::forward(int speed)
     
     // Control speed via PWM on enable pin for motor 1
     // analogWrite uses PWM (0-255 maps to 0%-100% duty cycle)
-    analogWrite(_ena, speed);
+    analogWrite(_ena, clampSpeed(speed));
     
     // Control speed via PWM on enable pin for motor 2
-    analogWrite(_enb, speed);
+    analogWrite(_enb, clampSpeed(speed));
 }
 
 /**
@@ -136,8 +161,14 @@ void Motor::backward(int speed)
     digitalWrite(_in4, HIGH);
     
     // Apply speed via PWM (faster = more power)
-    analogWrite(_ena, speed);
-    analogWrite(_enb, speed);
+    analogWrite(_ena, clampSpeed(speed));
+    analogWrite(_enb, clampSpeed(speed));
+}
+
+void Motor::drive(int leftSpeed, int rightSpeed)
+{
+    setMotor(_in1, _in2, _ena, leftSpeed);
+    setMotor(_in3, _in4, _enb, rightSpeed);
 }
 
 /**
@@ -168,8 +199,8 @@ void Motor::left(int speedena, int speedenb)
     digitalWrite(_in4, LOW);
     
     // Apply different speeds for independent motor control
-    analogWrite(_ena, speedena);  // Right motor speed
-    analogWrite(_enb, speedenb);  // Left motor speed
+    analogWrite(_ena, clampSpeed(speedena));  // Right motor speed
+    analogWrite(_enb, clampSpeed(speedenb));  // Left motor speed
 }
 
 /**
@@ -198,8 +229,8 @@ void Motor::right(int speedena, int speedenb)
     digitalWrite(_in4, HIGH);
     
     // Apply different speeds
-    analogWrite(_ena, speedena);  // Left motor speed
-    analogWrite(_enb, speedenb);  // Right motor speed
+    analogWrite(_ena, clampSpeed(speedena));  // Left motor speed
+    analogWrite(_enb, clampSpeed(speedenb));  // Right motor speed
 }
 
 /**
@@ -237,8 +268,8 @@ void Motor::WideTurnLeft(int speedena, int speedenb)
     
     // Different speeds create the turning arc
     // Left motor slower, right motor faster = curves left
-    analogWrite(_ena, speedena);  // Right motor (outer): faster speed
-    analogWrite(_enb, speedenb);  // Left motor (inner): slower speed
+    analogWrite(_ena, clampSpeed(speedena));  // Right motor (outer): faster speed
+    analogWrite(_enb, clampSpeed(speedenb));  // Left motor (inner): slower speed
 }
 
 /**
@@ -270,8 +301,8 @@ void Motor::WideTurnRight(int speedena, int speedenb)
     digitalWrite(_in4, LOW);
     
     // Left motor faster, right motor slower = curves right
-    analogWrite(_ena, speedena);  // Left motor (outer): faster speed
-    analogWrite(_enb, speedenb);  // Right motor (inner): slower speed
+    analogWrite(_ena, clampSpeed(speedena));  // Left motor (outer): faster speed
+    analogWrite(_enb, clampSpeed(speedenb));  // Right motor (inner): slower speed
 }
 
 /**

@@ -45,6 +45,17 @@ public:
      * @param speed - Speed value (0-255): 0=stop, 255=full speed
      */
     void backward(int speed);
+
+    /**
+     * Drive both motors with independent signed speeds
+     *
+     * @param leftSpeed  - Left motor speed (-255..255), negative = backward
+     * @param rightSpeed - Right motor speed (-255..255), negative = backward
+     *
+     * This is useful for PID, line following, joystick control, and smooth
+     * turns where each side needs its own speed and direction.
+     */
+    void drive(int leftSpeed, int rightSpeed);
     
     /**
      * Turn left with independent speed control for each motor
@@ -110,6 +121,9 @@ private:
     int _in3, _in4;  // Motor 2 direction pins (right motor)
     int _ena;        // Motor 1 PWM/speed pin (ENA on L298N)
     int _enb;        // Motor 2 PWM/speed pin (ENB on L298N)
+
+    int clampSpeed(int speed);
+    void setMotor(int forwardPin, int backwardPin, int pwmPin, int speed);
 };
 
 #endif // ARDUINO_MOTOR_H

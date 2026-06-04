@@ -7,14 +7,14 @@
 #include "qtr-sensor.h"
 
 QTRSensor::QTRSensor(uint8_t numSensors, uint8_t analogPin)
-    : _numSensors(numSensors), _analogPin(analogPin), _calibrated(false)
+    : _numSensors(constrain(numSensors, 1, 16)), _analogPin(analogPin), _calibrated(false)
 {
-    _sensorValues = new uint16_t[numSensors];
-    _whiteCalibration = new uint16_t[numSensors];
-    _blackCalibration = new uint16_t[numSensors];
+    _sensorValues = new uint16_t[_numSensors];
+    _whiteCalibration = new uint16_t[_numSensors];
+    _blackCalibration = new uint16_t[_numSensors];
 
     // Initialize with default values
-    for (uint8_t i = 0; i < numSensors; i++) {
+    for (uint8_t i = 0; i < _numSensors; i++) {
         _sensorValues[i] = 512;
         _whiteCalibration[i] = 1000;
         _blackCalibration[i] = 0;
@@ -73,12 +73,12 @@ uint16_t QTRSensor::readLinePosition()
 
     for (uint8_t i = 0; i < _numSensors; i++) {
         uint16_t normalized = normalizeValue(_sensorValues[i], i);
-        weightedSum += (uint32_t)normalized * i * 1000 / _numSensors;
+        weightedSum += (uint32_t)normalized * i * 1000;
         sensorSum += normalized;
     }
 
     if (sensorSum == 0) {
-        return 1500;  // No line detected, return center
+        return ((_numSensors - 1) * 1000) / 2;  // No line detected, return center
     }
 
     return (uint16_t)(weightedSum / sensorSum);
@@ -94,14 +94,14 @@ uint16_t QTRSensor::readLinePosWithConfidence(uint8_t& outConfidence)
 
     for (uint8_t i = 0; i < _numSensors; i++) {
         uint16_t normalized = normalizeValue(_sensorValues[i], i);
-        weightedSum += (uint32_t)normalized * i * 1000 / _numSensors;
+        weightedSum += (uint32_t)normalized * i * 1000;
         sensorSum += normalized;
     }
 
     // Calculate confidence (0-100%)
     if (sensorSum == 0) {
         outConfidence = 0;
-        return 1500;
+        return ((_numSensors - 1) * 1000) / 2;
     }
 
     outConfidence = min(100, (uint8_t)(sensorSum / 10));
@@ -166,9 +166,9 @@ uint16_t QTRSensor::normalizeValue(uint16_t rawValue, uint8_t sensorIndex)
         return 512;  // Invalid calibration
     }
 
-    // Map raw value to 0-1000 range
-    uint16_t normalized = (rawValue - black) * 1000 / (white - black);
+    long normalized = ((long)white - (long)rawValue) * 1000L / ((long)white - (long)black);
+    if (normalized < 0) normalized = 0;
     if (normalized > 1000) normalized = 1000;
 
-    return normalized;
+    return (uint16_t)normalized;
 }

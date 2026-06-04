@@ -155,11 +155,17 @@ public:
 
 private:
     uint8_t _currentSpeed;
+    float _currentSpeedFloat;
     uint8_t _targetSpeed;
+    uint8_t _rampStartSpeed;
     uint8_t _maxSpeed;
     uint8_t _accelRate;
     AccelProfile _profile;
     unsigned long _lastUpdateTime;
+    unsigned long _rampStartTime;
+    unsigned long _rampDurationMs;
+
+    void restartRamp();
 
     /**
      * Internal: Calculate S-curve interpolation

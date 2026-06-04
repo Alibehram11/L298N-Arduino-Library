@@ -300,7 +300,7 @@ make
 ---
 
 **Last Updated:** April 2026  
-**Library Version:** 2.1.0
+**Library Version:** 2.5.0
 
 3. Verify → Compile code to check for syntax errors
 4. Upload → Transfer code to Arduino board (USB connection required)

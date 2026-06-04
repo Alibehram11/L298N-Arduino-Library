@@ -61,7 +61,7 @@ target_include_directories(arduino-car PUBLIC
 )
 
 # Private header files (only used internally)
-target_include_directories(arduino-car PRIVATEpower-management.h;include/arduino/diagnostics.h;include/arduino/encoder.h;include/arduino/
+target_include_directories(arduino-car PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/arduino
 )
 
@@ -70,7 +70,7 @@ set_target_properties(arduino-car PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION 2
     PUBLIC_HEADER 
-        "include/arduino/motor.h;include/arduino/hc-06.h;include/arduino/hcsr-04.h;include/arduino/radio-link-i2c.h;include/arduino/pid-controller.h;include/arduino/qtr-sensor.h;include/arduino/motor-encoder.h;include/arduino/config-manager.h;include/arduino/speed-ramper.h;include/arduino/arduino.h"
+        "include/arduino/motor.h;include/arduino/hc-06.h;include/arduino/hcsr-04.h;include/arduino/radio-link-i2c.h;include/arduino/pid-controller.h;include/arduino/qtr-sensor.h;include/arduino/motor-encoder.h;include/arduino/config-manager.h;include/arduino/speed-ramper.h;include/arduino/power-management.h;include/arduino/diagnostics.h;include/arduino/encoder.h;include/arduino/arduino.h"
 )
 
 # Installation configuration

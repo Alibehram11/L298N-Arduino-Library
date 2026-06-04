@@ -85,12 +85,12 @@ public:
     /**
      * Read weighted line position
      *
-     * @return Position estimate (0 = leftmost, 3500 = rightmost for 8 sensors)
+     * @return Position estimate (0 = leftmost, 7000 = rightmost for 8 sensors)
      *
      * Calculation:
      *   - Black line at left edge: ~0
-     *   - Black line at center: ~1750 (for 8 sensors)
-     *   - Black line at right edge: ~3500
+     *   - Black line at center: ~3500 (for 8 sensors)
+     *   - Black line at right edge: ~7000
      *
      * Use to detect line offset and adjust motor speeds accordingly.
      */

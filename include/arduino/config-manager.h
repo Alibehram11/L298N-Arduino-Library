@@ -71,6 +71,14 @@ public:
     bool save();
 
     /**
+     * Check if the loaded configuration was restored from defaults
+     *
+     * @return true when load() fell back to defaults because EEPROM was empty,
+     *         incompatible, or failed CRC validation.
+     */
+    bool usedDefaults() const;
+
+    /**
      * Reset all parameters to default values
      *
      * Useful after corrupted config or factory reset.
@@ -175,6 +183,7 @@ private:
     static const uint8_t MAX_ENTRIES = 16;
     ConfigEntry _entries[MAX_ENTRIES];
     uint8_t _entryCount;
+    bool _usedDefaults;
 
     /**
      * Internal: Calculate CRC checksum

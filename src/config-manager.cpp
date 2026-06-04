@@ -6,9 +6,37 @@
 
 #include "config-manager.h"
 #include <EEPROM.h>
+#include <stdlib.h>
 #include <string.h>
 
-ConfigManager::ConfigManager() : _entryCount(0)
+namespace {
+    const uint16_t CONFIG_MAGIC = 0xCAFE;
+    const uint8_t CONFIG_VERSION = 1;
+
+    uint16_t crc16Update(uint16_t crc, uint8_t data)
+    {
+        crc ^= data;
+        for (uint8_t i = 0; i < 8; i++) {
+            if (crc & 1) {
+                crc = (crc >> 1) ^ 0xA001;
+            } else {
+                crc >>= 1;
+            }
+        }
+        return crc;
+    }
+
+    uint16_t crc16Bytes(const uint8_t* data, size_t length)
+    {
+        uint16_t crc = 0xFFFF;
+        for (size_t i = 0; i < length; i++) {
+            crc = crc16Update(crc, data[i]);
+        }
+        return crc;
+    }
+}
+
+ConfigManager::ConfigManager() : _entryCount(0), _usedDefaults(true)
 {
     loadDefaults();
 }
@@ -19,23 +47,84 @@ ConfigManager::~ConfigManager()
 
 bool ConfigManager::load()
 {
-    // Try to read from EEPROM
-    // For simplicity, this is a basic implementation
-    // In production, you'd read from EEPROM addresses sequentially
-    loadDefaults();
+    struct ConfigImage {
+        uint16_t magic;
+        uint8_t version;
+        uint8_t entryCount;
+        ConfigEntry entries[MAX_ENTRIES];
+        uint16_t crc;
+    };
+
+    if (EEPROM.length() < (int)sizeof(ConfigImage)) {
+        loadDefaults();
+        return false;
+    }
+
+    ConfigImage image;
+    EEPROM.get(0, image);
+
+    uint16_t expectedCRC = image.crc;
+    image.crc = 0;
+    uint16_t actualCRC = crc16Bytes((const uint8_t*)&image, sizeof(ConfigImage));
+
+    if (image.magic != CONFIG_MAGIC ||
+        image.version != CONFIG_VERSION ||
+        image.entryCount > MAX_ENTRIES ||
+        expectedCRC != actualCRC) {
+        loadDefaults();
+        return false;
+    }
+
+    _entryCount = image.entryCount;
+    for (uint8_t i = 0; i < _entryCount; i++) {
+        memcpy(&_entries[i], &image.entries[i], sizeof(ConfigEntry));
+        _entries[i].key[sizeof(_entries[i].key) - 1] = '\0';
+        _entries[i].value[sizeof(_entries[i].value) - 1] = '\0';
+    }
+
+    _usedDefaults = false;
     return true;
 }
 
 bool ConfigManager::save()
 {
-    // Save to EEPROM with CRC
-    // Simplified for embedded systems
+    struct ConfigImage {
+        uint16_t magic;
+        uint8_t version;
+        uint8_t entryCount;
+        ConfigEntry entries[MAX_ENTRIES];
+        uint16_t crc;
+    };
+
+    if (EEPROM.length() < (int)sizeof(ConfigImage)) {
+        return false;
+    }
+
+    ConfigImage image;
+    memset(&image, 0, sizeof(image));
+    image.magic = CONFIG_MAGIC;
+    image.version = CONFIG_VERSION;
+    image.entryCount = _entryCount;
+
+    for (uint8_t i = 0; i < _entryCount; i++) {
+        memcpy(&image.entries[i], &_entries[i], sizeof(ConfigEntry));
+    }
+
+    image.crc = 0;
+    image.crc = crc16Bytes((const uint8_t*)&image, sizeof(ConfigImage));
+    EEPROM.put(0, image);
+    _usedDefaults = false;
     return true;
 }
 
 void ConfigManager::resetToDefaults()
 {
     loadDefaults();
+}
+
+bool ConfigManager::usedDefaults() const
+{
+    return _usedDefaults;
 }
 
 int32_t ConfigManager::getInt(const char* key, int32_t defaultValue)
@@ -58,6 +147,10 @@ float ConfigManager::getFloat(const char* key, float defaultValue)
 
 uint8_t ConfigManager::getString(const char* key, char* buffer, uint8_t bufferSize, const char* defaultValue)
 {
+    if (buffer == nullptr || bufferSize == 0) {
+        return 0;
+    }
+
     int8_t index = findEntry(key);
     if (index >= 0) {
         strncpy(buffer, _entries[index].value, bufferSize - 1);
@@ -85,6 +178,10 @@ bool ConfigManager::setFloat(const char* key, float value)
 
 bool ConfigManager::setString(const char* key, const char* value)
 {
+    if (key == nullptr || value == nullptr || key[0] == '\0') {
+        return false;
+    }
+
     int8_t index = findEntry(key);
     if (index >= 0) {
         // Update existing entry
@@ -151,8 +248,7 @@ void ConfigManager::printToSerial()
 
 uint16_t ConfigManager::calculateCRC()
 {
-    // Simple CRC calculation (would need proper implementation)
-    return 0;
+    return crc16Bytes((const uint8_t*)_entries, _entryCount * sizeof(ConfigEntry));
 }
 
 int8_t ConfigManager::findEntry(const char* key)
@@ -168,6 +264,7 @@ int8_t ConfigManager::findEntry(const char* key)
 void ConfigManager::loadDefaults()
 {
     _entryCount = 0;
+    _usedDefaults = true;
 
     // Default PID gains
     setFloat("pid_kp", 1.0);

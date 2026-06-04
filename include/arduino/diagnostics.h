@@ -62,6 +62,11 @@ public:
     DiagnosticsEngine(uint8_t maxLogSize = 50);
 
     /**
+     * Destructor - release log buffer
+     */
+    ~DiagnosticsEngine();
+
+    /**
      * Log an error or warning
      * 
      * @param level - Severity level

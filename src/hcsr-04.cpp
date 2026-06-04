@@ -168,6 +168,12 @@ long HCSR04::calculateMedian(long* arr, uint8_t size)
  */
 long HCSR04::filterOutliers(long* samples, uint8_t numSamples, uint8_t& outValidCount)
 {
+    if (samples == nullptr || numSamples == 0)
+    {
+        outValidCount = 0;
+        return -1;
+    }
+
     // If filtering disabled, average all samples
     if (!_filteringEnabled)
     {
@@ -257,6 +263,16 @@ long HCSR04::measureDistanceAveraged(uint8_t numSamples)
     _lastMinDistance = minDist;
     _lastMaxDistance = maxDist;
     _totalSampleCount = numSamples;
+
+    if (validCount == 0)
+    {
+        _lastMinDistance = 0;
+        _lastMaxDistance = 0;
+        _lastAvgDistance = -1;
+        _validSampleCount = 0;
+        delete[] samples;
+        return -1;
+    }
 
     // Filter outliers and calculate average
     long avgDistance = filterOutliers(samples, validCount, _validSampleCount);
