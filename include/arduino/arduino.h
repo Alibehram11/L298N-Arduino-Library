@@ -66,5 +66,14 @@
 // Speed Ramper - Smooth acceleration/deceleration profiles
 #include "speed-ramper.h"
 
+// Power Management - Battery monitoring and energy tracking
+#include "power-management.h"
+
+// Diagnostics Engine - System health monitoring and error logging
+#include "diagnostics.h"
+
+// Encoder - Motor rotation and distance tracking
+#include "encoder.h"
+
 #endif // ARDUINO_CAR_LIBRARY_H
 

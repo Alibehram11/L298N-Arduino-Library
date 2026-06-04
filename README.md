@@ -1,50 +1,56 @@
-# Arduino Car Library - Complete Robotics Platform
+# Arduino Car Library - Advanced Robotics Platform v2.5.0
 
-An **enterprise-grade modular C++11 library** for Arduino-based autonomous robot vehicles with professional sensor support, motor control, and advanced navigation algorithms.
+> **Enterprise-grade modular C++11 library** for autonomous Arduino robot vehicles with professional sensor support, motor control, power management, and advanced diagnostics.
 
-**Version**: 2.2.0 | **License**: MIT | **Status**: Production Ready
+**Version**: 2.5.0 | **License**: MIT | **Status**: Production Ready | **C++ Standard**: C++11
 
-## 🚀 Key Features
+## 🎯 Overview
 
-### Core Modules
-- ✅ **Motor Control** - L298N dual motor driver with smooth speed regulation
-- ✅ **Bluetooth Communication** - HC-06 wireless remote control
-- ✅ **Ultrasonic Sensors** - HC-SR04 with MAD noise filtering
-- ✅ **I2C Radio Link** - NRF24L01, LoRa, and generic RF modules
+Complete robotics solution featuring precise motor control, feedback loops, wireless communication, battery management, and system diagnostics. Perfect for robot competitions, autonomous vehicles, and educational robotics projects.
 
-### Advanced Features (v2.2+)
-- 🔥 **PID Motor Speed Controller** - Stable velocity with encoder feedback
-- 🔥 **QTR Line Following** - Reflectance sensors for line tracking
-- 🔥 **Motor Encoders** - Quadrature position & speed tracking
-- 🔥 **Configuration Manager** - EEPROM persistent storage
-- 🔥 **Speed Ramping** - S-curve/linear acceleration profiles
+## ✨ What's New in v2.5.0
 
-## What It Provides
+| Feature | Status | Details |
+|---------|--------|---------|
+| **🔋 Power Management** | ✅ NEW | Battery voltage/current monitoring, runtime estimation |
+| **📊 Diagnostics Engine** | ✅ NEW | Error logging, system self-tests, performance metrics |
+| **📈 Encoder Odometry** | ✅ NEW | Distance tracking, acceleration detection |
+| **🎛️ PID Speed Control** | ✅ v2.2+ | Smooth speed regulation with feedback |
+| **📍 Configuration Manager** | ✅ v2.2+ | EEPROM persistent storage with validation |
+| **⚡ Speed Ramping** | ✅ v2.2+ | S-curve/linear acceleration profiles |
+| **📡 Line Following (QTR)** | ✅ v2.2+ | Reflectance sensor array support |
 
-| Module | Purpose | Features |
-|--------|---------|----------|
-| **Motor** | Dual DC motor control via L298N | Forward, backward, pivot turns, smooth curves, emergency brake |
-| **HC06** | Wireless serial communication | 9600 baud, send/receive strings, module reset |
-| **HCSR04** | Ultrasonic distance measurement | MAD filtering, averaging, async non-blocking mode, statistics |
-| **RadioLinkI2C** | Generic I2C RF receiver interface | RSSI monitoring, packet reading, link quality |
-| **PIDController** | Speed regulation loop | Tunable Kp/Ki/Kd, anti-windup, output clamping |
-| **QTRSensor** | Reflectance sensor array | Line position tracking, calibration, confidence metrics |
-| **MotorEncoder** | Quadrature encoder feedback | RPM/rad/s/mm/s calculation, distance tracking |
-| **ConfigManager** | Parameter persistence | JSON-like EEPROM storage with CRC validation |
-| **SpeedRamper** | Acceleration profiles | Linear/S-curve/exponential ramps for smooth motion |
+## 📦 Complete Module List
+
+| Module | Purpose | Key Features |
+|--------|---------|-------------|
+| **Motor** | Dual DC motor control | Forward, backward, pivots, curves, brake |
+| **HC06** | Wireless Bluetooth | 9600 baud, send/receive, module reset |
+| **HCSR04** | Ultrasonic ranging | MAD filtering, averaging, async mode, statistics |
+| **RadioLinkI2C** | Generic I2C RF | RSSI/LQI monitoring, packet reading |
+| **PIDController** | Speed regulation | Tunable gains, anti-windup, output clamping |
+| **MotorEncoder** | Position tracking | RPM calc, distance, acceleration detection |
+| **PowerManager** | Battery monitoring | Voltage/current sensing, runtime estimation |
+| **ConfigManager** | Settings persistence | EEPROM storage, parameter validation |
+| **DiagnosticsEngine** | System health | Error logging, self-tests, RAM tracking |
+| **QTRSensor** | Line following | Reflectance array, calibration, confidence |
+| **SpeedRamper** | Smooth motion | Linear/S-curve/exponential ramps |
 
 ## Hardware Requirements
 
-| Component | Quantity | Purpose | Notes |
+| Component | Qty | Purpose | Notes |
 | --- | ---: | --- | --- |
-| Arduino Uno/Nano/Mega | 1 | Main controller | C++11 support required |
-| L298N motor driver | 1 | Drives two DC motors | 5-12V input |
-| DC motors | 2 | Robot movement | 6V-12V, ~200 RPM typical |
+| Arduino Uno/Nano/Mega | 1 | Main controller | C++11 support |
+| L298N motor driver | 1 | Dual DC motor | 5-12V input |
+| DC motors | 2 | Propulsion | 6-12V, ~200 RPM |
 | Motor power supply | 1 | Motor voltage | Separate from Arduino |
-| HC-06 Bluetooth module | 1 | Optional wireless control | 3.3V logic level |
-| HC-SR04 sensor | 1 | Optional distance measurement | 5V logic level |
-| Quadrature encoders | 2 | Optional speed feedback | 1024 CPR typical |
-| QTR-8 sensor array | 1 | Optional line following | 8 reflectance sensors |
+| HC-06 Bluetooth | 1 | Wireless control (optional) | 3.3V logic |
+| HC-SR04 ultrasonic | 1 | Distance sensing (optional) | 5V logic |
+| Quadrature encoders | 2 | Speed feedback (optional) | 1024 CPR typical |
+| ACS712 current sensor | 1 | Current monitoring (optional) | 5A/30A variants |
+| Voltage divider | 1 | Battery voltage sensing (optional) | 1kΩ + 2kΩ resistors |
+| QTR-8 reflectance | 1 | Line following (optional) | 8 sensors |
+| Battery | 1 | Power supply | 7.4V-12V, 2000mAh+ |
 
 ## Quick Start
 

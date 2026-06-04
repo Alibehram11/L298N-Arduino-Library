@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 # Arduino Car Control & Sensor Library
 project(ArduinoCar
-    VERSION 2.1.0
-    DESCRIPTION "Modular Library: Motor Control + Bluetooth + Ultrasonic + I2C Radio for Arduino"
+    VERSION 2.5.0
+    DESCRIPTION "Advanced Modular Library: Motor Control + PID + Encoders + Power Management + Diagnostics + Bluetooth + Ultrasonic + I2C Radio"
     LANGUAGES CXX
 )
 
@@ -43,6 +43,15 @@ add_library(arduino-car
     
     # Speed ramping (smooth acceleration/deceleration)
     src/speed-ramper.cpp
+    
+    # Power management (battery monitoring)
+    src/power-management.cpp
+    
+    # System diagnostics and error logging
+    src/diagnostics.cpp
+    
+    # Motor encoder feedback
+    src/encoder.cpp
 )
 
 # Public header files (visible to users of the library)
@@ -52,7 +61,7 @@ target_include_directories(arduino-car PUBLIC
 )
 
 # Private header files (only used internally)
-target_include_directories(arduino-car PRIVATE
+target_include_directories(arduino-car PRIVATEpower-management.h;include/arduino/diagnostics.h;include/arduino/encoder.h;include/arduino/
     ${CMAKE_CURRENT_SOURCE_DIR}/include/arduino
 )
 
